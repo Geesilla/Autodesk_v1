@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@prisma/client": "^6.5.0",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-slot": "^1.1.2",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/cli": "^4.0.14",
     "@tailwindcss/postcss": "^4.0.14",
