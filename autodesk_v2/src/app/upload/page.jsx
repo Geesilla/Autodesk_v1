@@ -2,12 +2,15 @@
 
 import { useState } from "react";
 
-export default function UploadPage() {
+const UploadPage = () => {
   const [file, setFile] = useState(null);
 
-  const handleUpload = async () => {
-    if (!file) return alert("Select a file first!");
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const formData = new FormData();
     formData.append("file", file);
 
@@ -19,24 +22,17 @@ export default function UploadPage() {
     if (response.ok) {
       alert("File uploaded successfully!");
     } else {
-      alert("Upload failed.");
+      alert("Error uploading file.");
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Upload a File</h1>
-      <input
-        type="file"
-        onChange={(e) => setFile(e.target.files[0])}
-        className="mb-2"
-      />
-      <button
-        onClick={handleUpload}
-        className="bg-blue-500 text-white px-4 py-2"
-      >
-        Upload
-      </button>
-    </div>
+    <form onSubmit={handleSubmit}>
+      <input type="file" onChange={handleFileChange} />
+      <button type="submit">Upload</button>
+    </form>
   );
-}
+};
+
+export default UploadPage;
+

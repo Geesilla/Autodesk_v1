@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerSession } from "next-auth";
 import authOptions from "@/app/api/auth/[...nextauth]/route.js";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { ReactNode } from "react";
 
 export default async function Layout({ children }: { children: ReactNode }) {
