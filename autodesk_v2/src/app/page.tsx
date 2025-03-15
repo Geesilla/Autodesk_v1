@@ -1,8 +1,12 @@
-export default function Home() {
+// /pages/index.js
+import React from 'react';
+
+const Home = () => {
   return (
-    <div>
-      <h1>Welcome to Autodesk App</h1>
-      <p>This is the home page.</p>
+    <div className="bg-blue-500 text-white p-4">
+      Hello, TailwindCSS is working!
     </div>
   );
-}
+};
+
+export default Home;
