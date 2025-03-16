@@ -7,19 +7,25 @@ import {
     CardHeader,
     CardTitle,
   } from "@/components/ui/card"
+  import { Button } from "@/components/ui/button";
+  import Link from "next/link";
   
 export default async function Page ( ) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Card Title</CardTitle>
-                <CardDescription>Card Description</CardDescription>
+                <CardTitle>Dragon</CardTitle>
             </CardHeader>
             <CardContent>
-                <p>Card Content</p>
+                <p>3D Dragon model</p>
+                
             </CardContent>
             <CardFooter>
-                <p>Card Footer</p>
+                <Button  >
+                    <Link href="modelview">
+                    View Model
+                    </Link>
+                </Button>
             </CardFooter>
             </Card>
 
