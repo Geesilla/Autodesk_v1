@@ -1,3 +1,5 @@
+
+import type { Metadata } from 'next'
 import {
   ClerkProvider,
   SignInButton,
@@ -10,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link';
 
 function Header ( ) {
-  return (
+  return (       
     <header className='w-full flex z-[99] absolute p-4'>
         <div className='w-full'>
             <h1> App title </h1>
@@ -19,13 +21,13 @@ function Header ( ) {
         <SignedOut>
                 <SignInButton>
                     <Button variant={'outline'}>
-                            sign in
+                            Sign in
                     </Button>
                 </SignInButton>
 
                 <SignUpButton>
                     <Button>
-                            sign up
+                            Sign up
                     </Button>
                 </SignUpButton>
                 </SignedOut>

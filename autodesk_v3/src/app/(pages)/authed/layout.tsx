@@ -1,10 +1,12 @@
+'use client'
 import { Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
   import { Calendar, Home, Inbox, Search, Settings } from "lucide-react"
- 
+import { initialiseNewUser } from "@/features/users/actions"
+
   import {
 
     SidebarGroupContent,
@@ -16,11 +18,15 @@ import { Sidebar,
 import {
     ClerkProvider,
     SignInButton,
+    SignOutButton,
     SignUpButton,
     SignedIn,
     SignedOut,
     UserButton,
+    UserProfile,
   } from '@clerk/nextjs'
+import { useEffect } from "react"
+import { Button } from "@/components/ui/button"
 
 
 const items = [
@@ -52,6 +58,9 @@ const items = [
 ]
  
 export function AppSidebar() {
+  useEffect( ( ) => {
+      initialiseNewUser();
+  } , [ ] );;
   return (
     <Sidebar>
       <SidebarContent>
@@ -69,6 +78,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              <UserButton />
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -77,18 +87,22 @@ export function AppSidebar() {
   )
 }
 
-export default function  RootLayout({ children }: Readonly<{ children: React.ReactNode  }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode  }>) {
     return (
       <ClerkProvider>
             <SignedIn>
               <SidebarProvider>
                 <AppSidebar />
                 <main>
-                  <SidebarTrigger />
+                  <header>
+                    <SidebarTrigger />
+                    <SignOutButton>
+                        <Button> Sign out </Button>
+                     </SignOutButton>
+                  </header>
                   {children}
                 </main>
               </SidebarProvider>
-                  
                  {children}
             </SignedIn>
             <SignedOut>

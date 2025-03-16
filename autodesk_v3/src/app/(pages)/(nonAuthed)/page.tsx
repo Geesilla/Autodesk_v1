@@ -1,9 +1,12 @@
 'use server'
 
+import { ClerkProvider } from "@clerk/nextjs"
+
 
 export default async function LandingPage () {
 
   return (
+    <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}>
     <div className="bg-white">
 
       <div className="relative isolate px-6 pt-14 lg:px-8">
@@ -64,5 +67,6 @@ export default async function LandingPage () {
         </div>
       </div>
     </div>
+    </ClerkProvider>
   )
 }
