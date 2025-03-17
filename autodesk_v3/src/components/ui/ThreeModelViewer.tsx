@@ -9,7 +9,7 @@ type ModelViewerProps = {
 };
 
 function Model({ fileName }: { fileName: string }) {
-  const geometry = useLoader(STLLoader, `/models/${fileName}`);
+  const geometry = useLoader(STLLoader, `/Assets/${fileName}`);
 
   // Adjust position if necessary (here centered)
   return (

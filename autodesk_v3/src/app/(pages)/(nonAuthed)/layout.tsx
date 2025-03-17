@@ -15,7 +15,7 @@ function Header ( ) {
   return (       
     <header className='w-full flex z-[99] absolute p-4'>
         <div className='w-full'>
-            <h1> App title </h1>
+            <h1> JRGS TECH </h1>
         </div>
         <div className="flex flex-row space-x-3">
         <SignedOut>

@@ -1,34 +1,26 @@
-'use server'    
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-  } from "@/components/ui/card"
-  import { Button } from "@/components/ui/button";
-  import Link from "next/link";
-  
-export default async function Page ( ) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Dragon</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <p>3D Dragon model</p>
-                
-            </CardContent>
-            <CardFooter>
-                <Button  >
-                    <Link href="modelview">
-                    View Model
-                    </Link>
-                </Button>
-            </CardFooter>
-            </Card>
+import ModelCard from "@/components/ui/modelcard";
 
-
-    )
+export default function ModelsPage() {
+  return (
+    <div className="flex flex-wrap gap-6 justify-center p-6">
+      <ModelCard 
+        fileName="Articulated_DRAGON_V3.stl"
+        title="Articulated Dragon"
+        description="A 3D printable articulated dragon model."
+        modelId="dragon"
+      />
+      <ModelCard 
+        fileName="Chubby_Iguana.stl"
+        title="Chubby Iguana"
+        description="A 3D printable iguana"
+        modelId="iguana"
+      />      
+      <ModelCard 
+        fileName="Shark.stl"
+        title="Shark"
+        description="A 3D printable Shark"
+        modelId="shark"
+      />
+    </div>
+  );
 }

@@ -4,7 +4,7 @@ import { Sidebar,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-  import { BookImage, Calendar, FileAxis3D, Home, Inbox, Search, Settings } from "lucide-react"
+  import { BookImage, Calendar, FileAxis3D, Home, Inbox, Package, PackageOpen, Search, Settings } from "lucide-react"
 import { initialiseNewUser } from "@/features/users/actions"
 
   import {
@@ -37,24 +37,20 @@ const items = [
   },
   {
     title: "Inbox",
-    url: "#",
+    url: "/inbox",
     icon: Inbox,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
+    title: "Projects",
+    url: "projects",
+    icon: PackageOpen,
   },
   {
     title: "Models",
     url: "models",
     icon: FileAxis3D,
   },
+
 ]
  
 export function AppSidebar() {
@@ -62,12 +58,12 @@ export function AppSidebar() {
       initialiseNewUser();
   } , [ ] );;
   return (
-    <Sidebar>
+    <Sidebar className="shadow-md" >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-lg font-bold font-sans">JRGS TECH</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu  className="text-lg font-bold font-sans">
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
@@ -78,7 +74,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              <UserButton />
+              
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -87,28 +83,31 @@ export function AppSidebar() {
   )
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode  }>) {
-    return (
-      <ClerkProvider>
-            <SignedIn>
-              <SidebarProvider>
-                <AppSidebar />
-                <main>
-                  <header>
-                    <SidebarTrigger />
-                    <SignOutButton>
-                        <Button> Sign out </Button>
-                     </SignOutButton>
-                  </header>
-                  {children}
-                </main>
-              </SidebarProvider>
-                 {children}
-            </SignedIn>
-            <SignedOut>
-                    <p> You must sign in</p>
-            </SignedOut>
-      </ClerkProvider>
-    );
-  }
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <ClerkProvider>
+      <SignedIn>
+        <SidebarProvider>
+          <AppSidebar />
+          <main className="flex flex-col min-h-screen w-full">
+            {/* Header with Fixed Size & Button Aligned Right */}
+            <header className="w-full h-16 bg-gray-100 dark:bg-gray-900 flex items-center justify-between px-6 shadow-md">
+              <SidebarTrigger />
+              <div className="ml-auto">
+                <UserButton afterSignOutUrl="/" />
+              </div>
+            </header>
+
+            {/* Page Content */}
+            <div className="p-6 flex-grow">{children}</div>
+          </main>
+        </SidebarProvider>
+      </SignedIn>
+      <SignedOut>
+        <p className="text-center mt-6">You must sign in</p>
+      </SignedOut>
+    </ClerkProvider>
+  );
+}
+
   
