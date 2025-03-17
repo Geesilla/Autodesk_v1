@@ -4,7 +4,7 @@ import { Sidebar,
   SidebarFooter,
   SidebarGroup,
   SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-  import { BookImage, Calendar, FileAxis3D, Home, Inbox, Search, Settings } from "lucide-react"
+  import { BookImage, Calendar, FileAxis3D, Home, Inbox, PackageOpen, Search, Settings, Upload } from "lucide-react"
 import { initialiseNewUser } from "@/features/users/actions"
 
   import {
@@ -37,13 +37,13 @@ const items = [
   },
   {
     title: "Inbox",
-    url: "/inbox",
+    url: "inbox",
     icon: Inbox,
   },
   {
-    title: "Search",
-    url: "#",
-    icon: Search,
+    title: "Upload Models",
+    url: "upload",
+    icon: Upload,
   },
   {
     title: "Settings",
@@ -54,6 +54,11 @@ const items = [
     title: "Models",
     url: "models",
     icon: FileAxis3D,
+  },
+  {
+    title: "Projects",
+    url: "projects",
+    icon: PackageOpen,
   },
 ]
  
