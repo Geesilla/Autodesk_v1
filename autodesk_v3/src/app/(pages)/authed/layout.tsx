@@ -52,7 +52,7 @@ const items = [
   },
   {
     title: "Models",
-    url: "models",
+    url: "/authed/models",
     icon: FileAxis3D,
   },
   {
@@ -67,14 +67,14 @@ export function AppSidebar() {
       initialiseNewUser();
   } , [ ] );;
   return (
-    <Sidebar className="shadow-md" >
+    <Sidebar className="shadow-md bg-gray-300" >
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold font-sans">JRGS TECH</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu  className="text-lg font-bold font-sans">
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem key={item.title} className="bg-gray-300">
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />
@@ -100,7 +100,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppSidebar />
           <main className="flex flex-col min-h-screen w-full">
             {/* Header with Fixed Size & Button Aligned Right */}
-            <header className="w-full h-16 bg-gray-100 dark:bg-gray-900 flex items-center justify-between px-6 shadow-md">
+            <header className="w-full h-16 bg-gray-200 dark:bg-gray-900 flex items-center justify-between px-6 shadow-md">
               <SidebarTrigger />
               <div className="ml-auto">
                 <UserButton afterSignOutUrl="/" />
