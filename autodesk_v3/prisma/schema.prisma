@@ -1,25 +1,63 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id     Int    @id @default(autoincrement())
-  userId String
-  files  File[]
+  id        String   @id @default(uuid())  // Custom internal UUID
+  clerkId   String   @unique               // Clerk's user ID (for authentication)
+  username  String   @unique               // Stored username for comments & actions
+  models    Model[]
+  comments  Comment[]
 }
 
-model File {
-  id        Int      @id @default(autoincrement())
-  name      String
-  url       String
-  userId    Int
-  createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+model Model {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  versions    ModelVersion[]
+  tags        ModelTag[]
+}
 
-  @@index([userId], map: "File_userId_fkey")
+model ModelVersion {
+  id          String   @id @default(uuid())
+  modelId     String
+  model       Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  version     Int      @default(1)  // Version number for tracking changes
+  fileUrl     String   // CDN URL for the 3D model file
+  thumbnail   String   // CDN URL for the preview image
+  metadata    Json     // Stores additional model info (format, dimensions, etc.)
+  createdAt   DateTime @default(now())
+  comments    Comment[]
+}
+
+model Comment {
+  id             String   @id @default(uuid())
+  text           String
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modelVersionId String
+  modelVersion   ModelVersion @relation(fields: [modelVersionId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+}
+
+model Tag {
+  id    String   @id @default(uuid())
+  name  String   @unique
+  models ModelTag[]
+}
+
+model ModelTag {
+  modelId String
+  tagId   String
+  model   Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  @@id([modelId, tagId])
 }
