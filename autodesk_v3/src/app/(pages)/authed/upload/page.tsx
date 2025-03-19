@@ -1,9 +1,10 @@
 'use client'
 
-import { CldUploadWidget } from "next-cloudinary"
+import { CldUploadWidget , CldUploadButton } from "next-cloudinary"
 import { useUser } from "@clerk/nextjs"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
+import { saveUploadedModel } from "@/features/files/actions"
 
 export default function Upload() {
     const { user, isLoaded } = useUser()
@@ -30,42 +31,9 @@ export default function Upload() {
             size: result.info.bytes,
         }
 
-        try {
-            // Step 1: Find or create the user's model
-            const modelResponse = await fetch("/api/models", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    clerkId: user.id, // Using Clerk ID instead of NextAuth
-                    name: fileName,
-                    description: "Uploaded via Cloudinary",
-                }),
-            })
-
-            const modelData = await modelResponse.json()
-            if (!modelResponse.ok) throw new Error(modelData.error || "Failed to create model")
-
-            // Step 2: Create a new ModelVersion entry
-            const versionResponse = await fetch("/api/modelVersions", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    modelId: modelData.id,
-                    fileUrl,
-                    thumbnail: thumbnailUrl,
-                    metadata,
-                }),
-            })
-
-            const versionData = await versionResponse.json()
-            if (!versionResponse.ok) throw new Error(versionData.error || "Failed to create model version")
-
-            setMessage(`Upload successful! View model: ${modelData.id}`)
-        } catch (error: any) {
-            setMessage(`Upload failed: ${error.message}`)
-        } finally {
-            setUploading(false)
-        }
+        console.log( fileUrl , fileName , thumbnailUrl , metadata )
+        await saveUploadedModel({ fileName , fileUrl , thumbnailUrl , metadata });
+        setMessage("Uploaded")
     }
 
     if (!isLoaded) return <p>Loading...</p>
@@ -78,16 +46,16 @@ export default function Upload() {
         <main className="p-16 text-center">
             <h1 className="text-5xl font-medium py-8">Upload 3D Model</h1>
             <section className="flex flex-col items-center justify-between">
-                <CldUploadWidget
+                <CldUploadButton
+
                     uploadPreset="JRGS_Tech_app"
                     onSuccess={(result) => handleUpload(result)}
                 >
-                    {({ open }) => (
-                        <button disabled={uploading} onClick={() => open()}>
+                  
+                        {/* <button disabled={uploading} onClick={() => open()}>
                             {uploading ? "Uploading..." : "Upload a Model"}
-                        </button>
-                    )}
-                </CldUploadWidget>
+                        </button> */}
+                </CldUploadButton>
             </section>
             {message && <p className="mt-4">{message}</p>}
         </main>
