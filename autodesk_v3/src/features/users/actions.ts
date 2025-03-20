@@ -2,36 +2,45 @@
 import { currentUser } from "@clerk/nextjs/server";
 import prisma from "../../../prisma/client";
 
-export const initialiseNewUser = async  () => {
+export const initialiseNewUser = async () => {
     try {
         let user = await currentUser();
         let userId = user?.id;
 
-        console.log( userId )
+        console.log("Current user ID:", userId);
 
-        // if user exits ( connected clerk with db user )
+        if (!userId) {
+            throw new Error("User ID is undefined");
+        }
+
+        // if user exists (connected clerk with db user)
         let userObj = await prisma.user.findFirst({
             where: {
-                clerkId : userId
+                clerkId: userId
             }
         });
-        if( !userObj) {
-            //return create new User. 
-            return prisma.user.create({
-               data: {
+
+        console.log("User object from DB:", userObj);
+
+        if (!userObj) {
+            // return create new User.
+            let newUser = await prisma.user.create({
+                data: {
                     clerkId: userId
-               } 
-            })
+                }
+            });
+            console.log("New user created:", newUser);
+            return newUser;
         } else {
             return userObj;
         }
-    }
-    catch ( error ) {
+    } catch (error) {
+        console.error("Error in initialiseNewUser:", error);
         throw error;
     }
-}
+};
 
-export const fetchUser = async  () => {
+export const fetchUser = async () => {
     try {
         let user = await currentUser();
         let userId = user?.id

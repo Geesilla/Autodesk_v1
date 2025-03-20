@@ -9,57 +9,57 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())  // Custom internal UUID
-  clerkId   String   @unique               // Clerk's user ID (for authentication)
-  // username  String   @unique            // Stored username for comments & actions ( clerk session handles the username and social id )
-  models    Model[]
-  comments  Comment[]
+  id       String    @id @default(uuid())
+  clerkId  String    @unique
+  comments Comment[]
+  models   Model[]
 }
 
 model Model {
-  id          String   @id @default(uuid())
+  id          String         @id @default(uuid())
   name        String
   description String
-  fileUrl     String   // CDN URL for the 3D model file
-  metadata    Json     // Stores additional model info (format, dimensions, etc.)
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  versions    ModelVersion[]
+  metadata    Json
+  fileUrl     String
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   tags        ModelTag[]
+  versions    ModelVersion[]
 }
 
 model ModelVersion {
-  id          String   @id @default(uuid())
-  modelId     String
-  model       Model    @relation(fields: [modelId], references: [id], onDelete: Cascade)
-  version     Int      @default(1)  // Version number for tracking changes
-  fileUrl     String   // CDN URL for the 3D model file
-  thumbnail   String   // CDN URL for the preview image
-  metadata    Json     // Stores additional model info (format, dimensions, etc.)
-  createdAt   DateTime @default(now())
-  comments    Comment[]
+  id        String    @id @default(uuid())
+  modelId   String
+  version   Int       @default(1)
+  fileUrl   String
+  thumbnail String
+  metadata  Json
+  createdAt DateTime  @default(now())
+  comments  Comment[]
+  model     Model     @relation(fields: [modelId], references: [id], onDelete: Cascade)
 }
 
 model Comment {
-  id             String   @id @default(uuid())
+  id             String       @id @default(uuid())
   text           String
   userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   modelVersionId String
+  createdAt      DateTime     @default(now())
   modelVersion   ModelVersion @relation(fields: [modelVersionId], references: [id], onDelete: Cascade)
-  createdAt      DateTime @default(now())
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Tag {
-  id    String   @id @default(uuid())
-  name  String   @unique
+  id     String     @id @default(uuid())
+  name   String     @unique
   models ModelTag[]
 }
 
 model ModelTag {
   modelId String
   tagId   String
-  model   Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
-  tag     Tag   @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  model   Model  @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
   @@id([modelId, tagId])
 }
