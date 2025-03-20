@@ -67,14 +67,14 @@ export function AppSidebar() {
       initialiseNewUser();
   } , [ ] );;
   return (
-    <Sidebar className="shadow-md bg-gray-300" >
+    <Sidebar className="shadow-md " >
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold font-sans">JRGS TECH</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu  className="text-lg font-bold font-sans">
               {items.map((item) => (
-                <SidebarMenuItem key={item.title} className="bg-gray-300">
+                <SidebarMenuItem key={item.title} >
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />
