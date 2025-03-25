@@ -17,7 +17,7 @@ type ModelCardProps = {
 };
 
 function ModelPreview({ fileName }: { fileName: string }) {
-  const geometry = useLoader(STLLoader, `/Assets/${fileName}`);
+  const geometry = useLoader(STLLoader, fileName);
 
   geometry.center();
   geometry.computeBoundingBox();
@@ -44,12 +44,12 @@ export default function ModelCard({ fileName, title, description, modelId, onFet
       </CardHeader>
       <CardContent>
         <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden">
-          <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
+          {/* <Canvas camera={{ position: [0, 0, 5], fov: 50 }}>
             <ambientLight intensity={0.5} />
             <directionalLight position={[5, 5, 5]} />
             <OrbitControls enableZoom={false} enablePan={false} />
             <ModelPreview fileName={fileName} />
-          </Canvas>
+          </Canvas> */}
         </div>
       </CardContent>
       <CardFooter className="flex justify-between">

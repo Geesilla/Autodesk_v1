@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { saveUploadedModel } from "@/features/files/actions"
 
+
+
+
 export default function Upload() {
     const { user, isLoaded } = useUser()
     const router = useRouter()
@@ -32,7 +35,15 @@ export default function Upload() {
         }
 
         console.log( fileUrl , fileName , thumbnailUrl , metadata )
-        await saveUploadedModel({ fileName , fileUrl , thumbnailUrl , metadata });
+        await saveUploadedModel({ 
+            fileName, 
+            fileUrl, 
+            thumbnailUrl, 
+            metadata, 
+            thumbnail: thumbnailUrl, 
+            name: fileName, 
+            description: "Uploaded 3D model" 
+        });
         setMessage("Uploaded")
     }
 

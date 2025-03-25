@@ -1,22 +1,57 @@
+'use client';
+
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import ThreeModelViewer from "@/components/ui/ThreeModelViewer";
+import { getModelsForUser } from "@/features/files/actions";
 
-export default function ModelViewPage({ params }: { params: { id: string } }) {
-  console.log("Model ID from URL:", params.id); // Debugging
+type Model = {
+  id: string;
+  name: string;
+  fileUrl: string;
+};
 
-  const modelFileMap: Record<string, string> = {
-    dragon: "Articulated_DRAGON_V3.stl",
-    iguana: "Chubby_Iguana.stl",
-    shark: "Shark.stl",
-  };
+export default function ModelViewPage() {
+  const params = useParams();
+  const modelId = params?.id as string;
 
-  const fileName = modelFileMap[params.id] || "Articulated_DRAGON_V3.stl"; // Default file
+  const [models, setModels] = useState<Model[]>([]);
+  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+
+  // Fetch all models on mount
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const fetchedModels = await getModelsForUser();
+        console.log("Fetched models:", fetchedModels);
+        setModels(fetchedModels);
+      } catch (error) {
+        console.error("Error fetching models:", error);
+      }
+    }
+
+    fetchModels();
+  }, []);
+
+  // Once models are fetched, find the matching one by ID
+  useEffect(() => {
+    if (models.length && modelId) {
+      const foundModel = models.find((m) => m.id === modelId);
+      console.log("Found model:", foundModel);
+      setSelectedModel(foundModel || null);
+    }
+  }, [models, modelId]);
+
+  if (!selectedModel) {
+    return <div className="p-4">Model not found or still loading...</div>;
+  }
 
   return (
     <div className="flex justify-center items-center h-screen w-full absolute">
-      <ThreeModelViewer fileName={fileName} /> {/* ✅ Loads correct STL */}
+      <ThreeModelViewer
+        fileName={selectedModel.name}
+        fileUrl={selectedModel.fileUrl}
+      />
     </div>
   );
 }
-

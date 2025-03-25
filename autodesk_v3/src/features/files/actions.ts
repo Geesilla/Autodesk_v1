@@ -43,7 +43,7 @@ export const saveUploadedModel = async ({ fileUrl, fileName, thumbnailUrl, metad
               version: 1,
               fileUrl,
               metadata,
-              thumbnail: thumbnailUrl 
+              thumbnail: thumbnailUrl // ✅ this is correct
             }
           });
           
@@ -113,22 +113,45 @@ export const getUploadedModel = async (modelId: string) => {
     }
 }
 
+// export const fetchFileFromCDN = async (fileUrl: string) => {
+//     try {
+//         const response = await fetch(fileUrl);
+
+//         if (!response.ok) {
+//             throw new Error(`Failed to fetch file: ${response.statusText}`);
+//         }
+
+//         const arrayBuffer = await response.arrayBuffer();
+
+//         return {
+//             fileUrl,
+//             content: Buffer.from(arrayBuffer).toString("base64"), // Convert to base64 for safe transfer
+//         };
+//     } catch (error) {
+//         console.error("Error fetching file from CDN:", error);
+//         throw error;
+//     }
+
 export const fetchFileFromCDN = async (fileUrl: string) => {
     try {
-        const response = await fetch(fileUrl);
-
-        if (!response.ok) {
-            throw new Error(`Failed to fetch file: ${response.statusText}`);
-        }
-
-        const arrayBuffer = await response.arrayBuffer();
-
-        return {
-            fileUrl,
-            content: Buffer.from(arrayBuffer).toString("base64"), // Convert to base64 for safe transfer
-        };
+      const response = await fetch(fileUrl);
+  
+      console.log("Status:", response.status); // should be 200
+      console.log("OK:", response.ok);         // should be true
+      console.log("Content-Type:", response.headers.get("content-type")); // should show something like application/octet-stream
+  
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+      }
+  
+      const arrayBuffer = await response.arrayBuffer();
+  
+      return {
+        fileUrl,
+        content: Buffer.from(arrayBuffer).toString("base64"),
+      };
     } catch (error) {
-        console.error("Error fetching file from CDN:", error);
-        throw error;
+      console.error("💥 Error fetching file from CDN:", error);
+      throw error;
     }
-};
+  };
