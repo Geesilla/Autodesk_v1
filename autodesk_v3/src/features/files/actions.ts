@@ -10,6 +10,7 @@ type uploadModelParams = {
     metadata: any;
     name: string;
     description: string; // Added to match the Prisma schema
+    thumbnailUrl: string;
 };
 
 export const saveUploadedModel = async ({ fileUrl, fileName, thumbnailUrl, metadata }: uploadModelParams) => {
@@ -25,26 +26,27 @@ export const saveUploadedModel = async ({ fileUrl, fileName, thumbnailUrl, metad
         // Create the model
         let newModel = await prisma.model.create({
             data: {
-                userId: user.id,
-                fileUrl,
-                name: fileName,
-                description: metadata.description ?? "No description provided",
-                metadata,
-                //thumbnailUrl,
+              userId: user.id,
+              fileUrl,
+              name: fileName,
+              description: metadata.description ?? "No description provided",
+              metadata,
             }
-        });
+          });
+          
 
         console.log("New model created:", newModel);
 
-        // Create a model version
         let newModelVersion = await prisma.modelVersion.create({
             data: {
-                modelId: newModel.id,
-                version: 1,
-                fileUrl,
-                metadata
+              modelId: newModel.id,
+              version: 1,
+              fileUrl,
+              metadata,
+              thumbnail: thumbnailUrl 
             }
-        });
+          });
+          
 
         console.log("New model version created:", newModelVersion);
 
