@@ -40,6 +40,7 @@ export default function Model() {
                     <ModelCard
                         key={model.id}
                         fileName={model.fileName}
+                        fileUrl={model.fileUrl} // Pass the missing fileUrl property
                         title={model.metadata.title}
                         description={model.metadata.description}
                         modelId={model.id}

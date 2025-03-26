@@ -57,7 +57,7 @@ export default function Upload() {
         <main className="p-16 text-center">
             <h1 className="text-5xl font-medium py-8">Upload 3D Model</h1>
             <section className="flex flex-col items-center justify-between">
-                <CldUploadButton
+                <CldUploadButton className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg"
 
                     uploadPreset="JRGS_Tech_app"
                     onSuccess={(result) => handleUpload(result)}
