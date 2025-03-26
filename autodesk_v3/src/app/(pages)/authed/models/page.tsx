@@ -39,7 +39,7 @@ export default function Model() {
                 {models.map((model) => (
                     <ModelCard
                         key={model.id}
-                        fileName={model.fileName}
+                        fileName={model.name}
                         fileUrl={model.fileUrl} // Pass the missing fileUrl property
                         title={model.metadata.title}
                         description={model.metadata.description}
@@ -49,16 +49,7 @@ export default function Model() {
                 ))}
             </div>
 
-            {fileData && (
-                <div>
-                    <p>Fetched file (base64-encoded):</p>
-                    <textarea
-                        value={fileData}
-                        readOnly
-                        className="w-full h-32 border p-2"
-                    />
-                </div>
-            )}
+            
         </div>
     );
 }
