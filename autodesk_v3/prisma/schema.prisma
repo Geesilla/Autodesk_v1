@@ -1,3 +1,5 @@
+// prisma/schema.prisma
+
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
@@ -13,6 +15,18 @@ model User {
   clerkId  String    @unique
   comments Comment[]
   models   Model[]
+  projects Project[]
+}
+
+model Project {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  models      Model[]
+  user        User      @relation(fields: [userId], references: [id])
 }
 
 model Model {
@@ -22,7 +36,10 @@ model Model {
   userId      String
   metadata    Json
   fileUrl     String
+  // Optional association with a project:
+  projectId   String?
   user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project     Project?       @relation(fields: [projectId], references: [id])
   tags        ModelTag[]
   versions    ModelVersion[]
 }

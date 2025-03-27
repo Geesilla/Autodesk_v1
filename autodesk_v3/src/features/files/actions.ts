@@ -9,53 +9,70 @@ type uploadModelParams = {
     thumbnail: string;
     metadata: any;
     name: string;
-    description: string; // Added to match the Prisma schema
+    description: string;
     thumbnailUrl: string;
-};
-
-export const saveUploadedModel = async ({ fileUrl, fileName, thumbnailUrl, metadata }: uploadModelParams) => {
+    tags?: string[];      // New field for tags
+    projectId?: string;   // New field for project association
+  };
+  
+  export const saveUploadedModel = async ({
+    fileUrl,
+    fileName,
+    thumbnailUrl,
+    metadata,
+    tags,
+    projectId,
+  }: uploadModelParams) => {
     try {
-        console.log(fileUrl, fileName, thumbnailUrl, metadata);
-        let user = await fetchUser();
-        console.log(user?.id);
-
-        if (!user?.id) {
-            throw new Error("User not found");
-        }
-
-        // Create the model
-        let newModel = await prisma.model.create({
-            data: {
-              userId: user.id,
-              fileUrl,
-              name: fileName,
-              description: metadata.description ?? "No description provided",
-              metadata,
-            }
-          });
-          
-
-        console.log("New model created:", newModel);
-
-        let newModelVersion = await prisma.modelVersion.create({
+      let user = await fetchUser();
+      if (!user?.id) {
+        throw new Error("User not found");
+      }
+  
+      // Create the model, including the project association if provided
+      let newModel = await prisma.model.create({
+        data: {
+          userId: user.id,
+          fileUrl,
+          name: fileName,
+          description: metadata.description ?? "No description provided",
+          metadata,
+          projectId: projectId || null,
+        },
+      });
+  
+      let newModelVersion = await prisma.modelVersion.create({
+        data: {
+          modelId: newModel.id,
+          version: 1,
+          fileUrl,
+          metadata,
+          thumbnail: thumbnailUrl,
+        },
+      });
+  
+      // Process tags if provided
+      if (tags && tags.length > 0) {
+        for (const tagName of tags) {
+          let tag = await prisma.tag.findUnique({ where: { name: tagName } });
+          if (!tag) {
+            tag = await prisma.tag.create({ data: { name: tagName } });
+          }
+          await prisma.modelTag.create({
             data: {
               modelId: newModel.id,
-              version: 1,
-              fileUrl,
-              metadata,
-              thumbnail: thumbnailUrl // ✅ this is correct
-            }
+              tagId: tag.id,
+            },
           });
-          
-
-        console.log("New model version created:", newModelVersion);
-
-        return newModel;
+        }
+      }
+  
+      return newModel;
     } catch (error) {
-        console.error("Error in saveUploadedModel:", error);
-        throw error;
+      console.error("Error in saveUploadedModel:", error);
+      throw error;
     }
-}
+  };
 
 export const getModelsForUser = async () => {
     try {
