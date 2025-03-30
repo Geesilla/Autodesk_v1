@@ -1,48 +1,61 @@
-// app/projects/page.tsx
-'use client'
+'use client';
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+// Import server actions using the alias
+import { createProjectAction, getProjectsForUserAction } from "@/features/files/projects.server";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectDescription, setNewProjectDescription] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [filter, setFilter] = useState("All"); // Filtering dropdown state
+  const [message, setMessage] = useState("");
+
+  // Function to fetch projects via the server action
+  const fetchProjects = async () => {
+    try {
+      const fetchedProjects = await getProjectsForUserAction();
+      setProjects(fetchedProjects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setMessage("Error fetching projects.");
+    }
+  };
 
   useEffect(() => {
-    // TODO: Fetch projects for the logged-in user from your API
-    setProjects([]); // Replace with fetched projects
+    fetchProjects();
   }, []);
 
   const handleCreateProject = async () => {
-    // TODO: Call your backend API to create a new project,
-    // then update the projects state with the newly created project.
-    console.log("Creating project:", newProjectName, newProjectDescription);
-    // After creating the project, close the modal and reset the form
-    setIsModalOpen(false);
-    setNewProjectName("");
-    setNewProjectDescription("");
+    try {
+      if (!newProjectName || !newProjectDescription) {
+        setMessage("Project name and description are required.");
+        return;
+      }
+      console.log("Creating project:", newProjectName, newProjectDescription);
+      await createProjectAction(newProjectName, newProjectDescription);
+      setMessage("Project created successfully!");
+      // Refresh projects list
+      await fetchProjects();
+      // Close modal and reset form
+      setIsModalOpen(false);
+      setNewProjectName("");
+      setNewProjectDescription("");
+    } catch (error) {
+      console.error("Error creating project:", error);
+      setMessage("Error creating project.");
+    }
   };
 
   return (
     <main className="p-5">
-      {/* Header with filtering dropdown and Add New Project button */}
+      {/* Header with Add New Project button */}
       <header className="w-full h-16 bg-gray-100 flex items-center px-6 gap-5 shadow-md mb-8">
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          className="border rounded p-2"
-        >
-          <option value="All">All Projects</option>
-          <option value="Recent">Recently Created</option>
-          <option value="Alphabetical">Alphabetical</option>
-        </select>
         <Button onClick={() => setIsModalOpen(true)}>Add New Project</Button>
       </header>
 
-      {/* Modal popout for project creation */}
+      {/* Modal for project creation */}
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
           <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
@@ -72,6 +85,9 @@ export default function ProjectsPage() {
         </div>
       )}
 
+      {message && <p className="mt-4">{message}</p>}
+
+      {/* Display the list of projects */}
       <section>
         <h2 className="text-2xl mb-4">My Projects</h2>
         {projects.length === 0 ? (
