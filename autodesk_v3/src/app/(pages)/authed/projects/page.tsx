@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-// Import server actions using the alias
-import { createProjectAction, getProjectsForUserAction, addAssetToProjectAction } from "@/features/files/projects.server";
+import ThreeThumbnailViewer from "@/components/ui/ThreeThumbnailViewer"; // Import the thumbnail viewer
+import { createProjectAction, getProjectsForUserAction } from "@/features/files/projects.server";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -11,6 +12,8 @@ export default function ProjectsPage() {
   const [newProjectDescription, setNewProjectDescription] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [selectedProject, setSelectedProject] = useState<any | null>(null); // State for selected project
+  const router = useRouter(); // For navigation
 
   // Function to fetch projects via the server action
   const fetchProjects = async () => {
@@ -48,17 +51,12 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleAddAssetToProject = async (projectId: string, assetId: string) => {
-    try {
-      const updatedAsset = await addAssetToProjectAction(projectId, assetId);
-      console.log("Asset added to project:", updatedAsset);
-      setMessage("Asset successfully added to the project!");
-      // Optionally refresh the project list or UI
-      await fetchProjects();
-    } catch (error) {
-      console.error("Error adding asset to project:", error);
-      setMessage("Failed to add asset to the project.");
-    }
+  const handleProjectClick = (project: any) => {
+    setSelectedProject(project); // Set the selected project to display its models
+  };
+
+  const handleModelClick = (modelId: string) => {
+    router.push(`/authed/modelview/${modelId}`); // Navigate to the Model View Page
   };
 
   return (
@@ -108,7 +106,11 @@ export default function ProjectsPage() {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {projects.map((project) => (
-              <div key={project.id} className="border p-4 rounded">
+              <div
+                key={project.id}
+                className="border p-4 rounded cursor-pointer hover:bg-gray-100"
+                onClick={() => handleProjectClick(project)}
+              >
                 <h3 className="text-xl">{project.name}</h3>
                 <p>{project.description}</p>
               </div>
@@ -116,6 +118,40 @@ export default function ProjectsPage() {
           </div>
         )}
       </section>
+
+      {/* Modal to display selected project details */}
+      {selectedProject && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
+          <div className="bg-white p-8 rounded shadow-lg max-w-4xl w-full">
+            <h2 className="text-2xl mb-4">{selectedProject.name}</h2>
+            <p>{selectedProject.description}</p>
+            <h3 className="text-xl mt-4">Models in this Project:</h3>
+            {selectedProject.models && selectedProject.models.length > 0 ? (
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                {selectedProject.models.map((model: any) => (
+                  <div
+                    key={model.id}
+                    className="border p-4 rounded cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleModelClick(model.id)}
+                  >
+                    <h4 className="text-lg">{model.name}</h4>
+                    <div className="w-full h-32">
+                      <ThreeThumbnailViewer fileUrl={model.fileUrl} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-gray-500">No models added to this project yet.</p>
+            )}
+            <div className="flex gap-4 mt-4">
+              <Button variant="secondary" onClick={() => setSelectedProject(null)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
