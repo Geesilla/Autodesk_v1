@@ -1,18 +1,23 @@
 // app/models/page.tsx
-'use client'
+'use client';
 
 import ModelCard from "@/components/ui/modelcard";
 import { fetchFileFromCDN, getModelsForUser } from "@/features/files/actions";
+import { getProjectsForUserAction, addAssetToProjectAction } from "@/features/files/projects.server";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export default function ModelsPage() {
   const [models, setModels] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
   const [fileData, setFileData] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [filterText, setFilterText] = useState("");
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
+  // Fetch models on component mount
   useEffect(() => {
     const fetchModels = async () => {
       try {
@@ -26,19 +31,48 @@ export default function ModelsPage() {
     fetchModels();
   }, []);
 
+  // Fetch projects when the modal is opened
+  const fetchProjects = async () => {
+    try {
+      const fetchedProjects = await getProjectsForUserAction();
+      setProjects(fetchedProjects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
+
   const handleSelectModel = (modelId: string, checked: boolean) => {
-    setSelectedModels(prev =>
+    setSelectedModels((prev) =>
       checked ? [...prev, modelId] : prev.filter((id) => id !== modelId)
     );
   };
 
-  const handleAddToProject = () => {
-    // Placeholder implementation; replace with actual API or modal navigation
-    alert("Add to Project functionality coming soon.\nSelected Models: " + selectedModels.join(", "));
+  const openProjectModal = () => {
+    fetchProjects();
+    setIsProjectModalOpen(true);
+  };
+
+  const handleAddToProject = async () => {
+    if (!selectedProjectId) {
+      alert("Please select a project.");
+      return;
+    }
+
+    try {
+      for (const modelId of selectedModels) {
+        await addAssetToProjectAction(selectedProjectId, modelId);
+      }
+      setIsProjectModalOpen(false);
+      setSelectedModels([]);
+      setSelectedProjectId(null);
+      alert("Models successfully added to the project!");
+    } catch (error) {
+      console.error("Error adding models to project:", error);
+      alert("Failed to add models to the project.");
+    }
   };
 
   const handleDeleteAssets = () => {
-    // Placeholder implementation; replace with actual API call and confirmation
     alert("Delete Asset functionality coming soon.\nSelected Models: " + selectedModels.join(", "));
   };
 
@@ -53,7 +87,7 @@ export default function ModelsPage() {
     }
   };
 
-  // Filter models based on filterText (searching in fileName, metadata.title, or metadata.description)
+  // Filter models based on filterText
   const filteredModels = models.filter((model) => {
     const lowerFilter = filterText.toLowerCase();
     const nameMatch = model.name?.toLowerCase().includes(lowerFilter);
@@ -71,7 +105,7 @@ export default function ModelsPage() {
         </Button>
         {selectionMode && selectedModels.length > 0 && (
           <>
-            <Button onClick={handleAddToProject}>Add to Project</Button>
+            <Button onClick={openProjectModal}>Add to Project</Button>
             <Button onClick={handleDeleteAssets}>Delete Asset</Button>
           </>
         )}
@@ -109,6 +143,32 @@ export default function ModelsPage() {
           )}
         </div>
       </div>
+
+      {/* Project selection modal */}
+      {isProjectModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
+          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-2xl mb-4">Select a Project</h2>
+            <select
+              className="border rounded p-2 w-full"
+              onChange={(e) => setSelectedProjectId(e.target.value)}
+            >
+              <option value="">Select a Project</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+            <div className="flex gap-4 mt-4">
+              <Button onClick={handleAddToProject}>Add to Project</Button>
+              <Button variant="secondary" onClick={() => setIsProjectModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

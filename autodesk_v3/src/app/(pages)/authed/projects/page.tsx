@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 // Import server actions using the alias
-import { createProjectAction, getProjectsForUserAction } from "@/features/files/projects.server";
+import { createProjectAction, getProjectsForUserAction, addAssetToProjectAction } from "@/features/files/projects.server";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -45,6 +45,19 @@ export default function ProjectsPage() {
     } catch (error) {
       console.error("Error creating project:", error);
       setMessage("Error creating project.");
+    }
+  };
+
+  const handleAddAssetToProject = async (projectId: string, assetId: string) => {
+    try {
+      const updatedAsset = await addAssetToProjectAction(projectId, assetId);
+      console.log("Asset added to project:", updatedAsset);
+      setMessage("Asset successfully added to the project!");
+      // Optionally refresh the project list or UI
+      await fetchProjects();
+    } catch (error) {
+      console.error("Error adding asset to project:", error);
+      setMessage("Failed to add asset to the project.");
     }
   };
 
