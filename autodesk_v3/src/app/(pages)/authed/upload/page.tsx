@@ -97,7 +97,7 @@ export default function Upload() {
           </select>
         </div>
         <CldUploadButton
-          className="bg-blue-500 text-white font-medium py-2 px-4 rounded-lg"
+          className="bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg"
           uploadPreset="JRGS_Tech_app"
           onSuccess={(result) => handleUpload(result)}
         >

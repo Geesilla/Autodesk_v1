@@ -29,12 +29,14 @@ export default async function LandingPage () {
         <rect fill="url(#0787a7c5-978c-4f66-83c7-11c213f99cb7)" width="100%" height="100%" strokeWidth={0} />
       </svg>
       <div className="mx-auto max-w-7xl px-6 pt-10 pb-24 sm:pb-32 lg:flex lg:px-8 lg:py-40">
-        <div className="mx-auto max-w-2xl lg:mx-0 lg:shrink-0 lg:pt-8">
-          <img
-            alt="JRGS Logo"
-            src="/JRGSLogo.png"
-            className="h-11"
-          />
+        <div className="mx-auto max-w-2xl lg:mx-0 lg:shrink-0 lg:pt-8">      
+          <Image
+          alt="JRGS Logo"
+          src="/JRGSLogo.png"
+          width={1517}
+          height={500}
+          className="w-full h-auto"
+          />            
           <div className="mt-24 sm:mt-32 lg:mt-16">
             <a href="#" className="inline-flex space-x-6">
               <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-sm/6 font-semibold text-indigo-600 ring-1 ring-indigo-600/10 ring-inset">
@@ -50,8 +52,7 @@ export default async function LandingPage () {
             Securely Upload and Manage your 3D Assets
           </h1>
           <p className="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8">
-            Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo. Elit sunt amet
-            fugiat veniam occaecat.
+          Easily store, organize, and access your 3D models in the cloud. Keep your assets safe, fast to load, and ready for any project with powerful upload and management tools.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
             <a
