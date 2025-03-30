@@ -1,48 +1,59 @@
 // app/upload/page.tsx
-'use client'
+'use client';
 
-import { CldUploadButton } from "next-cloudinary"
-import { useUser } from "@clerk/nextjs"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { saveUploadedModel } from "@/features/files/actions"
-
-// Dummy projects list; later fetch this from your API.
-const dummyProjects = [
-  { id: "proj1", name: "Project One" },
-  { id: "proj2", name: "Project Two" },
-];
+import { CldUploadButton } from "next-cloudinary";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { saveUploadedModel } from "@/features/files/actions";
+import { getProjectsForUserAction } from "@/features/files/projects.server"; // Import the server action
 
 export default function Upload() {
-  const { user, isLoaded } = useUser()
-  const router = useRouter()
-  const [uploading, setUploading] = useState(false)
-  const [message, setMessage] = useState("")
-  const [tags, setTags] = useState("") // Comma-separated tags
-  const [selectedProject, setSelectedProject] = useState("")
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [tags, setTags] = useState(""); // Comma-separated tags
+  const [selectedProject, setSelectedProject] = useState("");
+  const [projects, setProjects] = useState<any[]>([]); // State to hold fetched projects
+
+  // Fetch projects created by the user
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const fetchedProjects = await getProjectsForUserAction();
+        setProjects(fetchedProjects); // Update state with fetched projects
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setMessage("Failed to fetch projects.");
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   async function handleUpload(result: any) {
     if (!isLoaded || !user) {
-      setMessage("You must be logged in to upload a model.")
-      return
+      setMessage("You must be logged in to upload a model.");
+      return;
     }
 
-    setUploading(true)
-    setMessage("Uploading...")
+    setUploading(true);
+    setMessage("Uploading...");
 
-    const fileUrl = result.info.secure_url
-    const fileName = result.info.original_filename
-    const thumbnailUrl = result.info.thumbnail_url || fileUrl
+    const fileUrl = result.info.secure_url;
+    const fileName = result.info.original_filename;
+    const thumbnailUrl = result.info.thumbnail_url || fileUrl;
     const metadata = {
       format: result.info.format,
       width: result.info.width,
       height: result.info.height,
       size: result.info.bytes,
       // Add any additional metadata fields here.
-    }
+    };
 
     // Process tags: split by commas and remove empty strings.
-    const tagArray = tags.split(",").map(tag => tag.trim()).filter(tag => tag !== "");
+    const tagArray = tags.split(",").map((tag) => tag.trim()).filter((tag) => tag !== "");
 
     await saveUploadedModel({
       fileName,
@@ -53,16 +64,16 @@ export default function Upload() {
       name: fileName,
       description: "Uploaded 3D model",
       tags: tagArray,
-      projectId: selectedProject || undefined,
+      projectId: selectedProject || undefined, // Associate with selected project
     });
-    setMessage("Uploaded")
-    setUploading(false)
+    setMessage("Uploaded");
+    setUploading(false);
   }
 
-  if (!isLoaded) return <p>Loading...</p>
+  if (!isLoaded) return <p>Loading...</p>;
   if (!user) {
-    router.push("/sign-in") // Redirect to sign-in page
-    return null
+    router.push("/sign-in"); // Redirect to sign-in page
+    return null;
   }
 
   return (
@@ -89,7 +100,7 @@ export default function Upload() {
             onChange={(e) => setSelectedProject(e.target.value)}
           >
             <option value="">None</option>
-            {dummyProjects.map((proj) => (
+            {projects.map((proj) => (
               <option key={proj.id} value={proj.id}>
                 {proj.name}
               </option>
@@ -106,5 +117,5 @@ export default function Upload() {
       </section>
       {message && <p className="mt-4">{message}</p>}
     </main>
-  )
+  );
 }
