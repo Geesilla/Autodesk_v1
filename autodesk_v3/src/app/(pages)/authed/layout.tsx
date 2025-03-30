@@ -30,26 +30,26 @@ import { Button } from "@/components/ui/button"
 
 
 const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "inbox",
-    icon: Inbox,
-  },
+  // {
+  //   title: "Home",
+  //   url: "#",
+  //   icon: Home,
+  // },
+  // {
+  //   title: "Inbox",
+  //   url: "inbox",
+  //   icon: Inbox,
+  // },
   {
     title: "Upload Models",
     url: "upload",
     icon: Upload,
   },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   url: "#",
+  //   icon: Settings,
+  // },
   {
     title: "Models",
     url: "/authed/models",
