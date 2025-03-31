@@ -18,26 +18,7 @@ function Header ( ) {
             
         </div>
         <div className="flex flex-row space-x-3">
-        <SignedOut>
-                <SignInButton>
-                    <Button variant={'outline'}>
-                            Sign in
-                    </Button>
-                </SignInButton>
-
-                <SignUpButton>
-                    <Button>
-                            Sign up
-                    </Button>
-                </SignUpButton>
-                </SignedOut>
-
-                <SignedIn>
-                  <Button>
-                      <Link href={'/authed/dashboard'}> Go to Models </Link>
-                  </Button>
-                  <UserButton />
-                </SignedIn>
+    
         </div>
     </header>
   )

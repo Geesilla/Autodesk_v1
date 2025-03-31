@@ -1,7 +1,17 @@
 'use server'
 
 import { ChevronRightIcon } from '@heroicons/react/20/solid'
-import { ClerkProvider } from "@clerk/nextjs"
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link';
+
 import Image from 'next/image'
 
 
@@ -33,21 +43,10 @@ export default async function LandingPage () {
           <Image
           alt="JRGS Logo"
           src="/JRGSLogo.png"
-          width={1517}
-          height={500}
-          className="w-full h-auto"
+          width={250}
+          height={350}
+          className="w-auto h-auto"
           />            
-          <div className="mt-24 sm:mt-32 lg:mt-16">
-            <a href="#" className="inline-flex space-x-6">
-              <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-sm/6 font-semibold text-indigo-600 ring-1 ring-indigo-600/10 ring-inset">
-                What's new
-              </span>
-              <span className="inline-flex items-center space-x-2 text-sm/6 font-medium text-gray-600">
-                <span>Just shipped v1.0</span>
-                <ChevronRightIcon aria-hidden="true" className="size-5 text-gray-400" />
-              </span>
-            </a>
-          </div>
           <h1 className="mt-10 text-5xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-7xl">
             Securely Upload and Manage your 3D Assets
           </h1>
@@ -55,15 +54,26 @@ export default async function LandingPage () {
           Easily store, organize, and access your 3D models in the cloud. Keep your assets safe, fast to load, and ready for any project with powerful upload and management tools.
           </p>
           <div className="mt-10 flex items-center gap-x-6">
-            <a
-              href="#"
-              className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            >
-              Get started
-            </a>
-            <a href="#" className="text-sm/6 font-semibold text-gray-900">
-              Learn more <span aria-hidden="true">→</span>
-            </a>
+          <SignedOut>
+                <SignInButton>
+                    <Button variant={'outline'}>
+                            Sign in
+                    </Button>
+                </SignInButton>
+
+                <SignUpButton>
+                    <Button>
+                            Sign up
+                    </Button>
+                </SignUpButton>
+                </SignedOut>
+
+                <SignedIn>
+                  <Button>
+                      <Link href={'/authed/dashboard'}> Go to Models </Link>
+                  </Button>
+                  <UserButton />
+                </SignedIn>
           </div>
         </div>
         <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:mt-0 lg:mr-0 lg:ml-10 lg:max-w-none lg:flex-none xl:ml-32">
@@ -71,7 +81,7 @@ export default async function LandingPage () {
             <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-gray-900/10 ring-inset lg:-m-4 lg:rounded-2xl lg:p-4">
               <img
                 alt="App screenshot"
-                src="https://tailwindcss.com/plus-assets/img/component-images/project-app-screenshot.png"
+                src="/ModePageScreenshot.png"
                 width={2432}
                 height={1442}
                 className="w-[76rem] rounded-md ring-1 shadow-2xl ring-gray-900/10"
