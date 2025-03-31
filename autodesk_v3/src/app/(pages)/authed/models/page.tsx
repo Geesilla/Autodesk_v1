@@ -4,6 +4,7 @@
 import ModelCard from "@/components/ui/modelcard";
 import { fetchFileFromCDN, getModelsForUser } from "@/features/files/actions";
 import { getProjectsForUserAction, addAssetToProjectAction } from "@/features/files/projects.server";
+import { addCommentForModelVersion } from "@/features/files/comments.server";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -16,6 +17,9 @@ export default function ModelsPage() {
   const [filterText, setFilterText] = useState("");
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [commentText, setCommentText] = useState(""); // State for comment text
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false); // State for comment modal visibility
+  const [currentModelVersionId, setCurrentModelVersionId] = useState<string | null>(null); // State for the current model version ID
 
   // Fetch models on component mount
   useEffect(() => {
@@ -53,6 +57,7 @@ export default function ModelsPage() {
   };
 
   const handleAddToProject = async () => {
+    console.log("Submit button clicked"); // Debug log
     if (!selectedProjectId) {
       alert("Please select a project.");
       return;
@@ -60,6 +65,7 @@ export default function ModelsPage() {
 
     try {
       for (const modelId of selectedModels) {
+        console.log(`Adding model ${modelId} to project ${selectedProjectId}`); // Debug log
         await addAssetToProjectAction(selectedProjectId, modelId);
       }
       setIsProjectModalOpen(false);
@@ -84,6 +90,41 @@ export default function ModelsPage() {
       }
     } catch (error) {
       console.error("Failed to fetch file:", error);
+    }
+  };
+
+  const openCommentModal = (modelVersionId: string) => {
+    setCurrentModelVersionId(modelVersionId);
+    setIsCommentModalOpen(true);
+  };
+
+  const closeCommentModal = () => {
+    setIsCommentModalOpen(false);
+    setCommentText("");
+    setCurrentModelVersionId(null);
+  };
+
+  const handleSubmitComment = async () => {
+    console.log("Submit button clicked with comment:", commentText); // Debug log
+    if (!commentText.trim()) {
+      alert("Comment cannot be empty.");
+      return;
+    }
+
+    if (!currentModelVersionId) {
+      console.error("No model version ID provided.");
+      return;
+    }
+
+    try {
+      const response = await addCommentForModelVersion(currentModelVersionId, commentText);
+      console.log("Comment successfully submitted:", response); // Debug log
+      setCommentText(""); // Clear the input field after submission
+      closeCommentModal();
+      alert("Comment added successfully!");
+    } catch (error) {
+      console.error("Error submitting comment:", error);
+      alert("Failed to submit comment.");
     }
   };
 
@@ -123,26 +164,52 @@ export default function ModelsPage() {
           {filteredModels.length === 0 ? (
             <p>No models match the filter criteria.</p>
           ) : (
-            filteredModels.map((model) => (
-              <ModelCard
-                key={model.id}
-                fileName={model.name}
-                fileUrl={model.fileUrl}
-                title={model.metadata.title}
-                description={model.metadata.description}
-                modelId={model.id}
-                onFetchFile={() => handleFetchFile(model.fileUrl)}
-                // Pass selection props to ModelCard:
-                selectionMode={selectionMode}
-                isSelected={selectedModels.includes(model.id)}
-                onSelectChange={(checked: boolean) =>
-                  handleSelectModel(model.id, checked)
-                }
-              />
-            ))
+            filteredModels.map((model) => {
+              const latestVersionId = model.versions?.[0]?.id; // Extract latestVersionId
+              console.log("Model latestVersionId:", latestVersionId); // Debug log
+              return (
+                <ModelCard
+                  key={model.id}
+                  fileName={model.name}
+                  fileUrl={model.fileUrl}
+                  title={model.metadata.title}
+                  description={model.metadata.description}
+                  modelId={model.id}
+                  latestVersionId={latestVersionId} // Pass latestVersionId correctly
+                  onFetchFile={() => handleFetchFile(model.fileUrl)}
+                  selectionMode={selectionMode}
+                  isSelected={selectedModels.includes(model.id)}
+                  onSelectChange={(checked: boolean) =>
+                    handleSelectModel(model.id, checked)
+                  }
+                  onComment={() => openCommentModal(latestVersionId)} // Pass latestVersionId to modal
+                />
+              );
+            })
           )}
         </div>
       </div>
+
+      {/* Comment Modal */}
+      {isCommentModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
+          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-2xl mb-4">Add a Comment</h2>
+            <textarea
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              placeholder="Write your comment here..."
+              className="border rounded p-2 w-full"
+            />
+            <div className="flex gap-4 mt-4">
+              <Button onClick={handleSubmitComment}>Submit</Button>
+              <Button variant="secondary" onClick={closeCommentModal}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Project selection modal */}
       {isProjectModalOpen && (
