@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import ThreeThumbnailViewer from "@/components/ui/ThreeThumbnailViewer"; // Import the thumbnail viewer
-import { createProjectAction, getProjectsForUserAction } from "@/features/files/projects.server";
+import { createProjectAction, getProjectsForUserAction, deleteProjectAction } from "@/features/files/projects.server";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<any[]>([]);
@@ -13,6 +13,9 @@ export default function ProjectsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedProject, setSelectedProject] = useState<any | null>(null); // State for selected project
+  const [isAddModelModalOpen, setIsAddModelModalOpen] = useState(false);
+  const [availableModels, setAvailableModels] = useState<any[]>([]);
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
   const router = useRouter(); // For navigation
 
   // Function to fetch projects via the server action
@@ -48,6 +51,21 @@ export default function ProjectsPage() {
     } catch (error) {
       console.error("Error creating project:", error);
       setMessage("Error creating project.");
+    }
+  };
+
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm("Are you sure you want to delete this project?")) {
+      return;
+    }
+
+    try {
+      await deleteProjectAction(projectId); // Call the server action
+      setProjects((prev) => prev.filter((project) => project.id !== projectId)); // Update UI
+      alert("Project deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting project:", error);
+      alert("Failed to delete project.");
     }
   };
 
@@ -108,11 +126,18 @@ export default function ProjectsPage() {
             {projects.map((project) => (
               <div
                 key={project.id}
-                className="border p-4 rounded cursor-pointer hover:bg-gray-100"
-                onClick={() => handleProjectClick(project)}
+                className="border p-4 rounded flex justify-between items-center hover:bg-gray-100"
               >
-                <h3 className="text-xl">{project.name}</h3>
-                <p>{project.description}</p>
+                <div onClick={() => handleProjectClick(project)} className="cursor-pointer">
+                  <h3 className="text-xl">{project.name}</h3>
+                  <p>{project.description}</p>
+                </div>
+                <Button
+                  className="bg-indigo-600 text-white hover:bg-indigo-700"
+                  onClick={() => handleDeleteProject(project.id)}
+                >
+                  Delete
+                </Button>
               </div>
             ))}
           </div>
@@ -145,7 +170,7 @@ export default function ProjectsPage() {
               <p className="mt-2 text-gray-500">No models added to this project yet.</p>
             )}
             <div className="flex gap-4 mt-4">
-              <Button variant="secondary" onClick={() => setSelectedProject(null)}>
+              <Button className="bg-indigo-600" onClick={() => setSelectedProject(null)}>
                 Close
               </Button>
             </div>
