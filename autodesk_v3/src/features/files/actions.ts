@@ -74,29 +74,31 @@ type uploadModelParams = {
     }
   };
 
-export const getModelsForUser = async () => {
+  export const getModelsForUser = async () => {
     try {
-        // Get the logged-in user
-        let user = await fetchUser();
-        console.log(user?.id);
-
-        if (!user?.id) {
-            throw new Error("User not found");
-        }
-
-        // Query and return all models where user.id exists
-        let models = await prisma.model.findMany({
-            where: {
-                userId: user.id
-            }
-        });
-
-        console.log("Models for user:", models);
-
-        return models;
+      let user = await fetchUser();
+  
+      if (!user?.id) {
+        throw new Error("User not found");
+      }
+  
+      let models = await prisma.model.findMany({
+        where: {
+          userId: user.id,
+        },
+        include: {
+          versions: {
+            orderBy: {
+              version: "desc", // ensures the latest version comes first
+            },
+          },
+        },
+      });
+  
+      return models;
     } catch (error) {
-        console.error("Error in getModelsForUser:", error);
-        throw error;
+      console.error("Error in getModelsForUser:", error);
+      throw error;
     }
 }
 
