@@ -208,6 +208,36 @@ export default function ModelsPage() {
           )}
         </div>
       </div>
+
+      {isProjectModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
+          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
+            <h2 className="text-2xl mb-4">Select a Project</h2>
+            <div className="flex flex-col gap-4">
+              <select
+                className="border rounded p-2"
+                value={selectedProjectId || ""}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select a project
+                </option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex gap-4 mt-4">
+              <Button onClick={handleAddToProject}>Add Models</Button>
+              <Button variant="secondary" onClick={() => setIsProjectModalOpen(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
