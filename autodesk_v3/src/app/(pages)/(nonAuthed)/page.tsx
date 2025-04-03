@@ -70,7 +70,7 @@ export default async function LandingPage () {
 
                 <SignedIn>
                   <Button>
-                      <Link href={'/authed/dashboard'}> Go to Models </Link>
+                      <Link href={'/authed/models'}> Go to Models </Link>
                   </Button>
                   <UserButton />
                 </SignedIn>
