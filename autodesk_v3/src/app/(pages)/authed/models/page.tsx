@@ -2,7 +2,7 @@
 'use client';
 
 import ModelCard from "@/components/ui/modelcard";
-import { fetchFileFromCDN, getModelsForUser } from "@/features/files/actions";
+import { fetchFileFromCDN, getModelsForUser, deleteModel } from "@/features/files/actions"; // Import deleteModel
 import { getProjectsForUserAction, addAssetToProjectAction } from "@/features/files/projects.server";
 import { addCommentForModelVersion } from "@/features/files/comments.server";
 import { useState, useEffect } from "react";
@@ -78,8 +78,27 @@ export default function ModelsPage() {
     }
   };
 
-  const handleDeleteAssets = () => {
-    alert("Delete Asset functionality coming soon.\nSelected Models: " + selectedModels.join(", "));
+  const handleDeleteAssets = async () => {
+    if (selectedModels.length === 0) {
+      alert("No models selected for deletion.");
+      return;
+    }
+
+    if (!confirm("Are you sure you want to delete the selected models?")) {
+      return;
+    }
+
+    try {
+      for (const modelId of selectedModels) {
+        await deleteModel(modelId); // Call the deleteModel server action
+      }
+      setModels((prev) => prev.filter((model) => !selectedModels.includes(model.id))); // Update UI
+      setSelectedModels([]); // Clear selection
+      alert("Selected models deleted successfully.");
+    } catch (error) {
+      console.error("Error deleting models:", error);
+      alert("Failed to delete selected models.");
+    }
   };
 
   const handleFetchFile = async (fileUrl: string) => {
@@ -189,53 +208,6 @@ export default function ModelsPage() {
           )}
         </div>
       </div>
-
-      {/* Comment Modal */}
-      {isCommentModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
-          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4">Add a Comment</h2>
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write your comment here..."
-              className="border rounded p-2 w-full"
-            />
-            <div className="flex gap-4 mt-4">
-              <Button onClick={handleSubmitComment}>Submit</Button>
-              <Button variant="secondary" onClick={closeCommentModal}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Project selection modal */}
-      {isProjectModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-300/45 z-50">
-          <div className="bg-white p-8 rounded shadow-lg max-w-md w-full">
-            <h2 className="text-2xl mb-4">Select a Project</h2>
-            <select
-              className="border rounded p-2 w-full"
-              onChange={(e) => setSelectedProjectId(e.target.value)}
-            >
-              <option value="">Select a Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            <div className="flex gap-4 mt-4">
-              <Button onClick={handleAddToProject}>Add to Project</Button>
-              <Button variant="secondary" onClick={() => setIsProjectModalOpen(false)}>
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

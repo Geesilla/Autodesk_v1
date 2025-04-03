@@ -130,25 +130,6 @@ export const getUploadedModel = async (modelId: string) => {
     }
 }
 
-// export const fetchFileFromCDN = async (fileUrl: string) => {
-//     try {
-//         const response = await fetch(fileUrl);
-
-//         if (!response.ok) {
-//             throw new Error(`Failed to fetch file: ${response.statusText}`);
-//         }
-
-//         const arrayBuffer = await response.arrayBuffer();
-
-//         return {
-//             fileUrl,
-//             content: Buffer.from(arrayBuffer).toString("base64"), // Convert to base64 for safe transfer
-//         };
-//     } catch (error) {
-//         console.error("Error fetching file from CDN:", error);
-//         throw error;
-//     }
-
 export const fetchFileFromCDN = async (fileUrl: string) => {
     try {
       const response = await fetch(fileUrl);
@@ -172,3 +153,29 @@ export const fetchFileFromCDN = async (fileUrl: string) => {
       throw error;
     }
   };
+
+export const deleteModel = async (modelId: string) => {
+    try {
+        let user = await fetchUser();
+        if (!user?.id) {
+            throw new Error("User not found");
+        }
+
+        const model = await prisma.model.findUnique({
+            where: { id: modelId },
+        });
+
+        if (!model || model.userId !== user.id) {
+            throw new Error("Model not found or unauthorized");
+        }
+
+        await prisma.modelVersion.deleteMany({ where: { modelId } });
+        await prisma.modelTag.deleteMany({ where: { modelId } });
+        await prisma.model.delete({ where: { id: modelId } });
+
+        return { success: true, message: "Model deleted successfully" };
+    } catch (error) {
+        console.error("Error in deleteModel:", error);
+        throw error;
+    }
+};
