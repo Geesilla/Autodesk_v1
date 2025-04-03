@@ -81,7 +81,7 @@ export default function ProjectsPage() {
     <main className="p-5">
       {/* Header with Add New Project button */}
       <header className="w-full h-16 bg-gray-100 flex items-center px-6 gap-5 shadow-md mb-8">
-        <Button onClick={() => setIsModalOpen(true)}>Add New Project</Button>
+        <Button onClick={() => setIsModalOpen(true)}>Create New Project</Button>
       </header>
 
       {/* Modal for project creation */}
