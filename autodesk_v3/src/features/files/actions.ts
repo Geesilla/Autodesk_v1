@@ -92,10 +92,19 @@ type uploadModelParams = {
               version: "desc", // ensures the latest version comes first
             },
           },
+          tags: {
+            include: {
+              tag: true, // Include the tag details
+            },
+          },
         },
       });
   
-      return models;
+      // Map the models to include tags as an array of strings
+      return models.map((model) => ({
+        ...model,
+        tags: model.tags.map((modelTag) => modelTag.tag.name),
+      }));
     } catch (error) {
       console.error("Error in getModelsForUser:", error);
       throw error;
@@ -180,4 +189,53 @@ export const deleteModel = async (modelId: string) => {
         console.error("Error in deleteModel:", error);
         throw error;
     }
+};
+
+export const saveModelTags = async (modelId: string, tags: string[]) => {
+  try {
+    // Ensure the model exists
+    const model = await prisma.model.findUnique({
+      where: { id: modelId },
+    });
+
+    if (!model) {
+      throw new Error("Model not found");
+    }
+
+    // Process tags
+    for (const tagName of tags) {
+      // Check if the tag already exists
+      let tag = await prisma.tag.findUnique({
+        where: { name: tagName },
+      });
+
+      // If the tag doesn't exist, create it
+      if (!tag) {
+        tag = await prisma.tag.create({
+          data: { name: tagName },
+        });
+      }
+
+      // Create or update the relationship between the model and the tag
+      await prisma.modelTag.upsert({
+        where: {
+          modelId_tagId: {
+            modelId,
+            tagId: tag.id,
+          },
+        },
+        update: {}, // No updates needed if the relationship already exists
+        create: {
+          modelId,
+          tagId: tag.id,
+        },
+      });
+    }
+
+    console.log("Tags saved successfully!");
+    return { success: true };
+  } catch (error) {
+    console.error("Error in saveModelTags:", error);
+    throw error;
+  }
 };

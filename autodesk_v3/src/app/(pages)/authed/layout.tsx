@@ -1,80 +1,56 @@
-'use client'
-import { Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-  import { BookImage, Calendar, FileAxis3D, Home, Inbox, PackageOpen, Search, Settings, Upload } from "lucide-react"
-import { initialiseNewUser } from "@/features/users/actions"
+'use client';
 
-  import {
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarHeader, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { FileAxis3D, PackageOpen, Upload } from "lucide-react";
+import { initialiseNewUser } from "@/features/users/actions";
 
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-  } from "@/components/ui/sidebar"
 import {
-    ClerkProvider,
-    SignInButton,
-    SignOutButton,
-    SignUpButton,
-    SignedIn,
-    SignedOut,
-    UserButton,
-    UserProfile,
-  } from '@clerk/nextjs'
-import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
-
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar";
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs';
+import { useEffect, useState } from "react";
 
 const items = [
-  // {
-  //   title: "Home",
-  //   url: "#",
-  //   icon: Home,
-  // },
-  // {
-  //   title: "Inbox",
-  //   url: "inbox",
-  //   icon: Inbox,
-  // },
   {
     title: "Upload Models",
-    url: "upload",
+    url: "/authed/upload", 
     icon: Upload,
   },
-  // {
-  //   title: "Settings",
-  //   url: "#",
-  //   icon: Settings,
-  // },
   {
     title: "Models",
-    url: "/authed/models",
+    url: "/authed/models", 
     icon: FileAxis3D,
   },
   {
     title: "Projects",
-    url: "projects",
+    url: "/authed/projects", 
     icon: PackageOpen,
   },
-]
- 
+];
+
 export function AppSidebar() {
-  useEffect( ( ) => {
-      initialiseNewUser();
-  } , [ ] );;
+  useEffect(() => {
+    initialiseNewUser();
+  }, []);
+
   return (
-    <Sidebar className="shadow-md " >
+    <Sidebar className="shadow-md w-64">
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-lg font-bold font-sans">JRGS TECH</SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu  className="text-lg font-bold font-sans">
+            <SidebarMenu className="text-lg font-bold font-sans">
               {items.map((item) => (
-                <SidebarMenuItem key={item.title} >
+                <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />
@@ -83,13 +59,12 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
-              
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -119,4 +94,3 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   );
 }
 
-  
