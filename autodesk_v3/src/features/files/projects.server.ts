@@ -92,10 +92,17 @@ export async function getProjectsForUserAction() {
 
   const projects = await prisma.project.findMany({
     where: {
-      userId: dbUser.id,
+      userId: dbUser.id, // Ensure projects belong to the logged-in user
     },
     include: {
-      models: true, // Include associated models in the response
+      models: {
+        where: {
+          userId: dbUser.id, // Ensure models belong to the logged-in user
+        },
+        include: {
+          project: true, // Include the project relation for models
+        },
+      },
     },
   });
 

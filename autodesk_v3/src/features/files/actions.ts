@@ -76,20 +76,22 @@ type uploadModelParams = {
 
   export const getModelsForUser = async () => {
     try {
+      // Fetch the logged-in user
       let user = await fetchUser();
   
       if (!user?.id) {
         throw new Error("User not found");
       }
   
+      // Fetch models belonging to the logged-in user
       let models = await prisma.model.findMany({
         where: {
-          userId: user.id,
+          userId: user.id, // Ensure models belong to the logged-in user
         },
         include: {
           versions: {
             orderBy: {
-              version: "desc", // ensures the latest version comes first
+              version: "desc", // Ensure the latest version comes first
             },
           },
           tags: {
@@ -97,6 +99,7 @@ type uploadModelParams = {
               tag: true, // Include the tag details
             },
           },
+          project: true, // Include the project relation
         },
       });
   
@@ -238,4 +241,6 @@ export const saveModelTags = async (modelId: string, tags: string[]) => {
     console.error("Error in saveModelTags:", error);
     throw error;
   }
+
+
 };
