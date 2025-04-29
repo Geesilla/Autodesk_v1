@@ -4,7 +4,7 @@ Autodesk Asset Manager
 
 steps
 1. run npm install 
-3. create an .env file
+3. create an .env file in autodesk_v3
 4. add the below .env variables into the .env:
 DATABASE_URL="postgresql://postgres:FlbhgPQcgteGUgMppLEIwtkhBuHuiSVE@trolley.proxy.rlwy.net:30348/railway"
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_Zmlyc3QtYW5jaG92eS00OC5jbGVyay5hY2NvdW50cy5kZXYk
