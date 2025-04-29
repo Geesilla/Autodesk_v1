@@ -79,35 +79,9 @@ export default function Upload() {
   return (
     <main className="p-16 text-center">
       <h1 className="text-5xl font-medium py-8">Upload 3D Model</h1>
+      <h3>.STL files only(10MB max)</h3>
       <section className="flex flex-col items-center space-y-4">
-        {/* Input for tags */}
-        <div>
-          <label className="block mb-1">Tags (comma separated):</label>
-          <input
-            type="text"
-            className="border rounded p-2"
-            placeholder="e.g., vehicle, architecture"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-        </div>
-        {/* Project selection */}
-        <div>
-          <label className="block mb-1">Select Project (optional):</label>
-          <select
-            className="border rounded p-2"
-            value={selectedProject}
-            onChange={(e) => setSelectedProject(e.target.value)}
-          >
-            <option value="">None</option>
-            {projects.map((proj) => (
-              <option key={proj.id} value={proj.id}>
-                {proj.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <CldUploadButton
+              <CldUploadButton
           className="bg-indigo-600 text-white font-medium py-2 px-4 rounded-lg"
           uploadPreset="JRGS_Tech_app"
           onSuccess={(result) => handleUpload(result)}
