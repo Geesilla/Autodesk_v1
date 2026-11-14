@@ -163,7 +163,7 @@ export const fetchFileFromCDN = async (fileUrl: string) => {
         content: Buffer.from(arrayBuffer).toString("base64"),
       };
     } catch (error) {
-      console.error("💥 Error fetching file from CDN:", error);
+      console.error(" Error fetching file from CDN:", error);
       throw error;
     }
   };
@@ -219,7 +219,7 @@ export const saveModelTags = async (modelId: string, tags: string[]) => {
         });
       }
 
-      // Create or update the relationship between the model and the tag
+      // Create or update the relationship between the model and the tag#> ?ÓÍ
       await prisma.modelTag.upsert({
         where: {
           modelId_tagId: {
