@@ -6,15 +6,18 @@ import { Button } from "@/components/ui/button";
 import ThreeThumbnailViewer from "@/components/ui/ThreeThumbnailViewer"; // Import the thumbnail viewer
 import { createProjectAction, getProjectsForUserAction, deleteProjectAction } from "@/features/files/projects.server";
 
+type ProjectList = Awaited<ReturnType<typeof getProjectsForUserAction>>;
+type ProjectItem = ProjectList[number];
+
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<any[]>([]);
+  const [projects, setProjects] = useState<ProjectList>([]);
   const [newProjectName, setNewProjectName] = useState("");
   const [newProjectDescription, setNewProjectDescription] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [selectedProject, setSelectedProject] = useState<any | null>(null); // State for selected project
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null); // State for selected project
   const [isAddModelModalOpen, setIsAddModelModalOpen] = useState(false);
-  const [availableModels, setAvailableModels] = useState<any[]>([]);
+  const [availableModels, setAvailableModels] = useState<unknown[]>([]);
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([]);
   const router = useRouter(); // For navigation
 
@@ -69,7 +72,7 @@ export default function ProjectsPage() {
     }
   };
 
-  const handleProjectClick = (project: any) => {
+  const handleProjectClick = (project: ProjectItem) => {
     setSelectedProject(project); // Set the selected project to display its models
   };
 
@@ -153,7 +156,7 @@ export default function ProjectsPage() {
             <h3 className="text-xl mt-4">Models in this Project:</h3>
             {selectedProject.models && selectedProject.models.length > 0 ? (
               <div className="grid grid-cols-2 gap-4 mt-4">
-                {selectedProject.models.map((model: any) => (
+                {selectedProject.models.map((model) => (
                   <div
                     key={model.id}
                     className="border p-4 rounded cursor-pointer hover:bg-gray-100"

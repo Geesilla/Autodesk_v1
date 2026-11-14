@@ -4,8 +4,8 @@ import prisma from "../../../prisma/client";
 
 export const initialiseNewUser = async () => {
     try {
-        let user = await currentUser();
-        let userId = user?.id;
+        const user = await currentUser();
+        const userId = user?.id;
 
         console.log("Current user ID:", userId);
 
@@ -14,7 +14,7 @@ export const initialiseNewUser = async () => {
         }
 
         // if user exists (connected clerk with db user)
-        let userObj = await prisma.user.findFirst({
+        const userObj = await prisma.user.findFirst({
             where: {
                 clerkId: userId
             }
@@ -24,7 +24,7 @@ export const initialiseNewUser = async () => {
 
         if (!userObj) {
             // return create new User.
-            let newUser = await prisma.user.create({
+            const newUser = await prisma.user.create({
                 data: {
                     clerkId: userId
                 }
@@ -42,8 +42,8 @@ export const initialiseNewUser = async () => {
 
 export const fetchUser = async () => {
     try {
-        let user = await currentUser();
-        let userId = user?.id
+        const user = await currentUser();
+        const userId = user?.id
 
         console.log( userId )
 

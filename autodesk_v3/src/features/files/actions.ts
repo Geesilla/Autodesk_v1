@@ -7,7 +7,7 @@ type uploadModelParams = {
     fileUrl: string;
     fileName: string;
     thumbnail: string;
-    metadata: any;
+    metadata: Record<string, string | number>;
     name: string;
     description: string;
     thumbnailUrl: string;
@@ -24,24 +24,24 @@ type uploadModelParams = {
     projectId,
   }: uploadModelParams) => {
     try {
-      let user = await fetchUser();
+      const user = await fetchUser();
       if (!user?.id) {
         throw new Error("User not found");
       }
   
       // Create the model, including the project association if provided
-      let newModel = await prisma.model.create({
+      const newModel = await prisma.model.create({
         data: {
           userId: user.id,
           fileUrl,
           name: fileName,
-          description: metadata.description ?? "No description provided",
+          description: typeof metadata.description === "string" ? metadata.description : "No description provided",
           metadata,
           projectId: projectId || null,
         },
       });
   
-      let newModelVersion = await prisma.modelVersion.create({
+      const newModelVersion = await prisma.modelVersion.create({
         data: {
           modelId: newModel.id,
           version: 1,
@@ -77,14 +77,14 @@ type uploadModelParams = {
   export const getModelsForUser = async () => {
     try {
       // Fetch the logged-in user
-      let user = await fetchUser();
+      const user = await fetchUser();
   
       if (!user?.id) {
         throw new Error("User not found");
       }
   
       // Fetch models belonging to the logged-in user
-      let models = await prisma.model.findMany({
+      const models = await prisma.model.findMany({
         where: {
           userId: user.id, // Ensure models belong to the logged-in user
         },
@@ -117,7 +117,7 @@ type uploadModelParams = {
 export const getUploadedModel = async (modelId: string) => {
     try {
         // Fetch the model details from the database
-        let model = await prisma.model.findUnique({
+        const model = await prisma.model.findUnique({
             where: {
                 id: modelId
             }
@@ -130,7 +130,7 @@ export const getUploadedModel = async (modelId: string) => {
         console.log("Model details from DB:", model);
 
         // Fetch the file from the CDN using the fileUrl
-        let file = await fetchFileFromCDN(model.fileUrl);
+        const file = await fetchFileFromCDN(model.fileUrl);
 
         console.log("File details from CDN:", file);
 
@@ -170,7 +170,7 @@ export const fetchFileFromCDN = async (fileUrl: string) => {
 
 export const deleteModel = async (modelId: string) => {
     try {
-        let user = await fetchUser();
+        const user = await fetchUser();
         if (!user?.id) {
             throw new Error("User not found");
         }

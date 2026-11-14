@@ -23,7 +23,7 @@ type Model = {
   fileUrl: string;
   tags?: string[];
   description?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   project?: { id: string; name: string; description?: string | null; userId: string; createdAt: Date; updatedAt: Date } | null; // Update project property to reflect its structure
   versions?: string[];
 };
@@ -47,7 +47,7 @@ export default function ModelViewPage() {
           fetchedModels.map((model) => ({
             ...model,
             metadata: typeof model.metadata === 'object' && model.metadata !== null
-              ? (model.metadata as Record<string, any>)
+              ? (model.metadata as Record<string, unknown>)
               : undefined, // Ensure metadata is either a Record or undefined
             versions: model.versions?.map((version) => version.id) || [], // Extract version IDs as strings
             project: model.project || null, // Ensure project matches the updated type
@@ -154,7 +154,7 @@ export default function ModelViewPage() {
             <p>
               <strong>Metadata:</strong>{" "}
               {selectedModel.metadata?.size
-                ? `Size: ${formatFileSize(selectedModel.metadata.size)}`
+                ? `Size: ${formatFileSize(Number(selectedModel.metadata.size))}`
                 : JSON.stringify(selectedModel.metadata, null, 2)}
             </p>
             <p><strong>Number of Tags:</strong> {selectedModel.tags?.length || 0}</p>

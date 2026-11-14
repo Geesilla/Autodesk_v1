@@ -1,7 +1,7 @@
 // app/upload/page.tsx
 'use client';
 
-import { CldUploadButton } from "next-cloudinary";
+import { CldUploadButton, type CloudinaryUploadWidgetResults } from "next-cloudinary";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -15,7 +15,7 @@ export default function Upload() {
   const [message, setMessage] = useState("");
   const [tags, setTags] = useState(""); // Comma-separated tags
   const [selectedProject, setSelectedProject] = useState("");
-  const [projects, setProjects] = useState<any[]>([]); // State to hold fetched projects
+  const [projects, setProjects] = useState<Awaited<ReturnType<typeof getProjectsForUserAction>>>([]); // State to hold fetched projects
 
   // Fetch projects created by the user
   useEffect(() => {
@@ -32,9 +32,14 @@ export default function Upload() {
     fetchProjects();
   }, []);
 
-  async function handleUpload(result: any) {
+  async function handleUpload(result: CloudinaryUploadWidgetResults) {
     if (!isLoaded || !user) {
       setMessage("You must be logged in to upload a model.");
+      return;
+    }
+
+    if (!result.info || typeof result.info === "string") {
+      setMessage("Upload failed: missing file information.");
       return;
     }
 

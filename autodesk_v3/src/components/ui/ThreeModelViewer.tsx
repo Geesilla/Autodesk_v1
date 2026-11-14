@@ -9,12 +9,17 @@ type ModelViewerProps = {
   fileUrl: string; // Example: "Articulated_DRAGON_V3.stl"
 };
 
-function Model({ fileName , fileUrl}: { fileName: string; fileUrl: string }) {
+function Model({ fileName, fileUrl }: { fileName: string; fileUrl: string }) {
   if (!fileUrl) {
     console.warn("Missing fileUrl in <Model />");
     return null; // Prevents crashing
   }
-  
+
+  return <LoadedModel fileName={fileName} fileUrl={fileUrl} />;
+}
+
+// Separate component so useLoader is always called unconditionally within it
+function LoadedModel({ fileName, fileUrl }: { fileName: string; fileUrl: string }) {
   const geometry = useLoader(STLLoader, fileUrl);
 
   console.log("Rendering model:", fileName);

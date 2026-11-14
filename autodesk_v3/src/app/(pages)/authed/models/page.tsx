@@ -8,9 +8,20 @@ import { addCommentForModelVersion } from "@/features/files/comments.server";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
+type ModelList = Awaited<ReturnType<typeof getModelsForUser>>;
+type ProjectList = Awaited<ReturnType<typeof getProjectsForUserAction>>;
+
+const asString = (value: unknown): string | undefined =>
+  typeof value === "string" ? value : undefined;
+
+const metaString = (metadata: unknown, key: string): string | undefined =>
+  typeof metadata === "object" && metadata !== null
+    ? asString((metadata as Record<string, unknown>)[key])
+    : undefined;
+
 export default function ModelsPage() {
-  const [models, setModels] = useState<any[]>([]);
-  const [projects, setProjects] = useState<any[]>([]);
+  const [models, setModels] = useState<ModelList>([]);
+  const [projects, setProjects] = useState<ProjectList>([]);
   const [fileData, setFileData] = useState<string | null>(null);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
@@ -151,8 +162,8 @@ export default function ModelsPage() {
   const filteredModels = models.filter((model) => {
     const lowerFilter = filterText.toLowerCase();
     const nameMatch = model.name?.toLowerCase().includes(lowerFilter);
-    const titleMatch = model.metadata?.title?.toLowerCase().includes(lowerFilter);
-    const descriptionMatch = model.metadata?.description?.toLowerCase().includes(lowerFilter);
+    const titleMatch = metaString(model.metadata, "title")?.toLowerCase().includes(lowerFilter);
+    const descriptionMatch = metaString(model.metadata, "description")?.toLowerCase().includes(lowerFilter);
     return nameMatch || titleMatch || descriptionMatch;
   });
 
@@ -191,8 +202,8 @@ export default function ModelsPage() {
                   key={model.id}
                   fileName={model.name}
                   fileUrl={model.fileUrl}
-                  title={model.metadata.title}
-                  description={model.metadata.description}
+                  title={metaString(model.metadata, "title") ?? ""}
+                  description={metaString(model.metadata, "description") ?? ""}
                   modelId={model.id}
                   latestVersionId={latestVersionId} // Pass latestVersionId correctly
                   onFetchFile={() => handleFetchFile(model.fileUrl)}

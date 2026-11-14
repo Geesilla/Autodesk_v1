@@ -10,7 +10,7 @@ export async function createProjectAction(name: string, description: string) {
     throw new Error("User not found");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
       clerkId: user.id,
     },
@@ -38,7 +38,7 @@ export async function addModelsToProjectAction(modelIds: string[], projectId: st
     throw new Error("User not found");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
       clerkId: user.id,
     },
@@ -80,7 +80,7 @@ export async function getProjectsForUserAction() {
     throw new Error("User not found");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
       clerkId: user.id,
     },
@@ -132,7 +132,7 @@ export async function addAssetToProjectAction(projectId: string, assetId: string
     throw new Error("User not found");
   }
 
-  let dbUser = await prisma.user.findUnique({
+  const dbUser = await prisma.user.findUnique({
     where: {
       clerkId: user.id,
     },
